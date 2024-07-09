@@ -1,0 +1,92 @@
+﻿@model List<ECommerceApp.EntityLayer.Dtos.CategoryDtos.ResultCategoryDto>
+@{
+    Layout = null;
+}
+
+
+<div class="row">
+    <div class="col">
+        <div class="card shadow">
+            <div class="card-header border-0">
+                <h3 class="mb-0">Kategoriler</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Kategori Adı</th>
+                            <th scope="col">Sil</th>
+                            <th scope="col">Güncelle</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link category-link" data-category-id="@item.CategoryId" href="#">@item.CategoryName</a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link">No categories available</span>
+                            </li>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4">
+            <div class="text-center">
+                T&G Workshop - Microservices Project
+            </div>
+            <div class="row" id="productList">
+            </div>
+        </main>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // When a category link is clicked
+            $('.category-link').click(function (e) {
+                e.preventDefault();
+                var categoryId = $(this).data('category-id');
+                // Create a new URL based on the selected category
+                var url = '@Url.Action("GetProductsByCategory", "Product")' + '/' + categoryId;
+                // Send an AJAX request
+                fetchProductList(url);
+            });
+
+            // Fetch the default product list when the page is loaded
+            var defaultUrl = '@Url.Action("GetAllProducts", "Product")';
+            fetchProductList(defaultUrl);
+
+            // Send an AJAX request to fetch the product list
+            function fetchProductList(url) {
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    dataType: 'html', // We expect a response in HTML format
+                    success: function (response) {
+                        // Show the product list
+                        $('#productList').html(response); // Clear previous products and add new products
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('API Request Error:', status, error);
+                    }
+                });
+            }
+        });
+    </script>
+}
